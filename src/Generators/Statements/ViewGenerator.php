@@ -42,7 +42,17 @@ class ViewGenerator extends StatementGenerator implements Generator
 
     protected function getStatementPath(string $view): string
     {
-        return 'resources/views/' . str_replace('.', '/', $view) . '.blade.php';
+        /* modification starts - support for custom path output to modules directory */
+        if (self::$p['force_output_to_modules_directory']===true) {                    
+            $override_path = self::$p['modules_path'].'/'.self::$p['modules_name'].'/'.self::$p[$this->get_class_name($this)].'/';
+            $override_path = str_replace('\\','/',$override_path);                        
+        } else {
+            $override_path = 'resources/views/';
+        }
+        /* modification ends - support for custom path output to modules directory */
+
+        // return 'resources/views/' . str_replace('.', '/', $view) . '.blade.php';
+        return $override_path . str_replace('.', '/', $view) . '.blade.php';
     }
 
     protected function populateStub(string $stub, RenderStatement $renderStatement): string

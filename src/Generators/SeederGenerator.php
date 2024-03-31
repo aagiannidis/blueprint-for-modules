@@ -32,12 +32,22 @@ class SeederGenerator extends AbstractClassGenerator implements Generator
 
     protected function getPath(BlueprintModel $blueprintModel): string
     {
+        /* modification starts - support for custom path output to modules directory */
+        if (self::$p['force_output_to_modules_directory']===true) {                    
+            $override_path = self::$p['modules_path'].'/'.self::$p['modules_name'].'/'.self::$p[$this->get_class_name($this)].'/';
+            $override_path = str_replace('\\','/',$override_path);            
+        } else {
+            $override_path = 'database/seeders/';
+        }
+        /* modification ends - support for custom path output to modules directory */
+
         $path = $blueprintModel->name();
         if ($blueprintModel->namespace()) {
             $path = str_replace('\\', '/', $blueprintModel->namespace()) . '/' . $path;
         }
 
-        return 'database/seeders/' . $path . 'Seeder.php';
+        // return 'database/seeders/' . $path . 'Seeder.php';
+        return $override_path . $path . 'Seeder.php';
     }
 
     protected function populateStub(string $stub, BlueprintModel $model): string

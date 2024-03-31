@@ -50,7 +50,17 @@ class ResourceGenerator extends StatementGenerator implements Generator
 
     protected function getStatementPath(string $name): string
     {
-        return Blueprint::appPath() . '/Http/Resources/' . $name . '.php';
+        /* modification starts - support for custom path output to modules directory */
+        if (self::$p['force_output_to_modules_directory']===true) {                    
+            $override_path = '/'.self::$p[$this->get_class_name($this)].'/'; 
+            $override_path = str_replace('\\','/',$override_path);                                   
+        } else {
+            $override_path = '/Http/Resources/';
+        }
+        /* modification ends - support for custom path output to modules directory */
+        
+        // return Blueprint::appPath() . '/Http/Resources/' . $name . '.php';
+        return Blueprint::appPath() . $override_path . $name . '.php';
     }
 
     protected function populateStub(string $stub, Controller $controller, ResourceStatement $resource): string

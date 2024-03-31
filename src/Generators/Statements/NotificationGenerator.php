@@ -45,7 +45,17 @@ class NotificationGenerator extends StatementGenerator
 
     protected function getStatementPath(string $name): string
     {
-        return Blueprint::appPath() . '/Notification/' . $name . '.php';
+         /* modification starts - support for custom path output to modules directory */
+         if (self::$p['force_output_to_modules_directory']===true) {                    
+            $override_path = self::$p[$this->get_class_name($this)].'/';
+            $override_path = str_replace('\\','/',$override_path);            
+            $override_path = '/'.$override_path;
+        } else {
+            $override_path = '/Notification/';
+        }
+        /* modification ends - support for custom path output to modules directory */
+
+        return Blueprint::appPath() . $override_path . $name . '.php';
     }
 
     protected function populateStub(string $stub, SendStatement $sendStatement): string

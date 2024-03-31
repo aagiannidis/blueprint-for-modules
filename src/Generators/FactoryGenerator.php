@@ -46,14 +46,35 @@ class FactoryGenerator extends AbstractClassGenerator implements Generator
             $path = str_replace('\\', '/', $blueprintModel->namespace()) . '/' . $path;
         }
 
-        return 'database/factories/' . $path . 'Factory.php';
+        /* modification starts - support for custom path output to modules directory */
+        if (self::$p['force_output_to_modules_directory']===true) {                    
+            $override_path = self::$p['modules_path'].'/'.self::$p['modules_name'].'/'.self::$p[$this->get_class_name($this)].'/';
+            $override_path = str_replace('\\','/',$override_path);
+            echo($override_path."\n");
+        } else {
+            $override_path = 'database/factories/';
+        }
+        /* modification ends - support for custom path output to modules directory */
+        
+        // return 'database/factories/' . $path . 'Factory.php';
+        return $override_path . $path . 'Factory.php';
     }
 
     protected function populateStub(string $stub, Model $model): string
     {
+	 	/* modification starts - support for custom path output to modules directory */
+        if (self::$p['force_output_to_modules_directory']===true) {                    
+            $override_path = self::$p['modules_path'].'/'.self::$p['modules_name'].'/'.self::$p[$this->get_class_name($this)];
+            $override_path = str_replace('\\','\\',$override_path);
+            $override_path = str_replace('/','\\',$override_path);            
+        } else {
+            $override_path = 'Database\Factories';
+        }
+        /* modification ends - support for custom path output to modules directory */
         $stub = str_replace('{{ model }}', $model->name(), $stub);
         $stub = str_replace('//', $this->buildDefinition($model), $stub);
-        $stub = str_replace('{{ namespace }}', 'Database\Factories' . ($model->namespace() ? '\\' . $model->namespace() : ''), $stub);
+        // $stub = str_replace('{{ namespace }}', 'Database\Factories' . ($model->namespace() ? '\\' . $model->namespace() : ''), $stub);
+        $stub = str_replace('{{ namespace }}', $override_path . ($model->namespace() ? '\\' . $model->namespace() : ''), $stub);
         $stub = str_replace('use {{ namespacedModel }};', $this->buildImports($model), $stub);
 
         return $stub;

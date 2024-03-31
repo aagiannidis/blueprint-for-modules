@@ -509,6 +509,18 @@ class MigrationGenerator extends AbstractClassGenerator implements Generator
     {
         $dir = 'database/migrations/';
         $name = '_create_' . $tableName . '_table.php';
+        
+        /* modification starts - support for custom path output to modules directory */
+        if (self::$p['force_output_to_modules_directory']===true) {                    
+            $override_path = self::$p['modules_path'].'/'.self::$p['modules_name'].'/'.self::$p[$this->get_class_name($this)].'/';
+            $override_path = str_replace('\\','/',$override_path);            
+            echo($override_path);
+            $dir = $override_path;
+        } else {
+            $dir = 'database/migrations/';
+        }
+        /* modification ends - support for custom path output to modules directory */
+
 
         if ($overwrite) {
             $migrations = collect($this->filesystem->files($dir))

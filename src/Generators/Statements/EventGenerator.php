@@ -45,6 +45,13 @@ class EventGenerator extends StatementGenerator
 
     protected function getStatementPath(string $name): string
     {
+        /* modification starts - support for custom path output to modules directory */
+        if (self::$p['force_output_to_modules_directory']===true) {                    
+            $override_path = self::$p['modules_path'].'/'.self::$p['modules_name'].'/'.self::$p[$this->get_class_name($this)].'/'. $name . '.php';
+            echo($override_path);
+        }
+        /* modification ends - support for custom path output to modules directory */
+        
         return Blueprint::appPath() . '/Events/' . $name . '.php';
     }
 
